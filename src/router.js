@@ -1,25 +1,46 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Home from './views/Home.vue'
+import HelloWorld from '@/components/HelloWorld'
+import android from '@/components/android/android'
+import login from '@/components/user/login'
+import signup from '@/components/user/signup'
+import website from '@/components/website/website'
+import work from '@/components/work/work'
 
 Vue.use(Router)
 
 export default new Router({
-  mode: 'history',
-  base: process.env.BASE_URL,
   routes: [
     {
       path: '/',
-      name: 'home',
-      component: Home
+      name: 'Helloworld',
+      component: HelloWorld
     },
     {
-      path: '/about',
-      name: 'about',
-      // route level code-splitting
-      // this generates a separate chunk (about.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: () => import(/* webpackChunkName: "about" */ './views/About.vue')
+      path: '/android',
+      name: 'android',
+      component: android
+    },
+    {
+      path: '/login',
+      name: 'login',
+      component: login
+    },
+    {
+      path: '/signup',
+      name: 'signup',
+      component: signup
+    },
+    {
+      path: '/website',
+      name: 'website',
+      component: website
+    },
+    {
+      path: '/work',
+      name: 'work',
+      component: work
     }
-  ]
+  ],
+  mode: 'history'
 })
