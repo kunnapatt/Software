@@ -16,7 +16,6 @@
 export default {
   computed: {
     meetups () {
-      // return true
       return this.$store.getters.featuredMeetups
     }
   }

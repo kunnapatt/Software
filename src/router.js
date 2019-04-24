@@ -6,6 +6,8 @@ import login from '@/components/user/login'
 import signup from '@/components/user/signup'
 import website from '@/components/website/website'
 import work from '@/components/work/work'
+import newwork from '@/components/work/newWork'
+import detail from '@/components/work/detailwork'
 
 Vue.use(Router)
 
@@ -40,6 +42,17 @@ export default new Router({
       path: '/work',
       name: 'work',
       component: work
+    },
+    {
+      path: '/work/new',
+      name: 'newwork',
+      component: newwork
+    },
+    {
+      path: '/work/:id',
+      name: 'detail',
+      props: true,
+      component: detail
     }
   ],
   mode: 'history'
