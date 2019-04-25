@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import * as firebase from 'firebase'
 
 Vue.use(Vuex)
 
@@ -57,16 +58,132 @@ export const store = new Vuex.Store({
         title: 'June',
         date: '2017-06-30' }
     ],
-    user: {
-      id: 'abacadaba',
-      registeredMeetup: ['aaabbbccc']
-    }
+    user: null,
+    loading: false,
+    error: null
   },
   mutations: {
-
+    setLoadedWorks (state, payload) {
+      state.loadedWork = payload
+    },
+    createWork (state, payload) {
+      state.loadedWork.push(payload)
+    },
+    setUser (state, payload) {
+      state.user = payload
+    },
+    setLoading (state, payload) {
+      state.loading = payload
+    },
+    setError (state, payload) {
+      state.error = payload
+    },
+    clearError (state, payload) {
+      state.error = null
+    }
   },
   actions: {
-
+    loadWork ({ commit }) {
+      firebase.database().ref('work').once('value')
+        .then((data) => {
+          const work = []
+          const obj = data.val()
+          for (let key in obj) {
+            work.push({
+              id: key,
+              title: obj[key].title,
+              imageUrl: obj[key].imageUrl,
+              date: obj[key].date,
+              creatorID: obj[key].createorId
+            })
+          }
+          commit('setLoadedWorks', work)
+        })
+        .catch(
+          (error) => {
+            console.log(error)
+          }
+        )
+    },
+    createWork ({ commit, getters }, payload) {
+      const worka = {
+        title: payload.title,
+        // location: payload.location,
+        imageUrl: payload.imageUrl,
+        // description: payload.description,
+        date: payload.date.toISOString(),
+        // id: '12956863heregwh'
+        createorId: getters.user.id
+      }
+      firebase.database().ref('work').push(worka)
+        .then((data) => {
+          // console.log(data)
+          const key = data.key
+          commit('createWork', {
+            ...worka,
+            id: key
+          })
+        })
+        .catch((error) => {
+          console.log(error)
+        })
+      // Reach out to firebase and store it
+      commit('createWork', worka)
+    },
+    signupUser ({ commit }, payload) {
+      commit('setLoading', true)
+      commit('clearError')
+      firebase.auth().createUserWithEmailAndPassword(payload.email, payload.password)
+        .then(
+          user => {
+            commit('setLoading', false)
+            const newUser = {
+              id: user.uid,
+              registeredMeetup: []
+            }
+            commit('setUser', newUser)
+          }
+        )
+        .catch(
+          error => {
+            commit('setLoading', false)
+            commit('setError', error)
+            console.log(error)
+          }
+        )
+    },
+    signUserIn ({ commit }, payload) {
+      commit('setLoading', true)
+      commit('clearError')
+      firebase.auth().signInWithEmailAndPassword(payload.email, payload.password)
+        .then(
+          user => {
+            commit('setLoading', false)
+            const newUser = {
+              id: user.uid,
+              registeredMeetup: []
+            }
+            commit('setUser', newUser)
+          }
+        )
+        .catch(
+          error => {
+            commit('setLoading', false)
+            commit('setError', error)
+            console.log(error)
+          }
+        )
+    },
+    autoSignin ({ commit }, payload) {
+      commit('setUser', { id: payload.uid, registeredMeetup: [] })
+    },
+    logout ({ commit }, payload) {
+      firebase.auth().signOut()
+      commit('setUser', null)
+    },
+    clearError ({ commit }) {
+      commit('clearError')
+    }
   },
   getters: {
     loadedMeetups (state) {
@@ -84,13 +201,13 @@ export const store = new Vuex.Store({
         })
       }
     },
-    loadedWork (state) {
+    loadedWorks (state) {
       return state.loadedWork.sort((workA, workB) => {
         return workA.date > workB.date
       })
     },
     featuredWork (state, getters) {
-      return getters.loadedWork.slice(0, 5)
+      return getters.loadedWorks.slice(0, 10)
     },
     loadeddetail (state) {
       return (workId) => {
@@ -98,6 +215,15 @@ export const store = new Vuex.Store({
           return work.id === workId
         })
       }
+    },
+    user (state) {
+      return state.user
+    },
+    loading (state) {
+      return state.loading
+    },
+    error (state) {
+      return state.error
     }
   }
 })

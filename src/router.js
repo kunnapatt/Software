@@ -8,6 +8,7 @@ import website from '@/components/website/website'
 import work from '@/components/work/work'
 import newwork from '@/components/work/newWork'
 import detail from '@/components/work/detailwork'
+import AuthGuard from './auth-guard'
 
 Vue.use(Router)
 
@@ -46,7 +47,8 @@ export default new Router({
     {
       path: '/work/new',
       name: 'newwork',
-      component: newwork
+      component: newwork,
+      beforeEnter: AuthGuard
     },
     {
       path: '/work/:id',

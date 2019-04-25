@@ -7,13 +7,31 @@ import './registerServiceWorker'
 import Vuetify from 'vuetify'
 import 'vuetify/dist/vuetify.min.css' // Ensure you are using css-loader
 import { store } from './store/index'
+import * as firebase from 'firebase/app'
+import AlertCmp from './components/shared/alerts.vue'
 
 Vue.use(Vuetify)
 
 Vue.config.productionTip = false
+Vue.component('app-alert', AlertCmp)
 
 new Vue({
   router,
   store,
-  render: h => h(App)
+  render: h => h(App),
+  created () {
+    firebase.initializeApp({
+      apiKey: 'AIzaSyDfNUdaDO_4W97n605dqPaCBgvgAoEJLDo',
+      authDomain: 'vuese-5b13a.firebaseapp.com',
+      databaseURL: 'https://vuese-5b13a.firebaseio.com',
+      projectId: 'vuese-5b13a',
+      storageBucket: 'vuese-5b13a.appspot.com'
+    })
+    firebase.auth().onAuthStateChanged((user) => {
+      if (user) {
+        this.$store.dispatch('autoSignin', user)
+      }
+    })
+    this.$store.dispatch('loadWork')
+  }
 }).$mount('#app')

@@ -20,6 +20,12 @@
           {{ item.title }}
         </v-btn>
       </v-toolbar-items>
+      <v-toolbar-items class="hidden-xs-only">
+        <v-btn flat v-if="userIsAuthenticated" @click="onLogout">
+          <v-icon left> exit_to_app </v-icon>
+            Logout
+        </v-btn>
+      </v-toolbar-items>
     </v-toolbar>
     <v-navigation-drawer temporary app v-model="sideNav">
       <v-list>
@@ -30,9 +36,16 @@
           <v-list-tile-action>
             <v-icon>{{ item.icon }}</v-icon>
           </v-list-tile-action>
-
           <v-list-tile-content>
             <v-list-tile-title>{{ item.title}}</v-list-tile-title>
+          </v-list-tile-content>
+        </v-list-tile>
+        <v-list-tile v-if="userIsAuthenticated" @click="onLogout">
+          <v-list-tile-action>
+            <v-icon>exit_to_app</v-icon>
+          </v-list-tile-action>
+          <v-list-tile-content>
+            <v-list-tile-title>Logout</v-list-tile-title>
           </v-list-tile-content>
         </v-list-tile>
       </v-list>
@@ -52,6 +65,14 @@
             <v-list-tile-title>{{ item.title}}</v-list-tile-title>
           </v-list-tile-content>
         </v-list-tile>
+        <v-list-tile v-if="userIsAuthenticated" @click="onLogout">
+          <v-list-tile-action>
+            <v-icon>exit_to_app</v-icon>
+          </v-list-tile-action>
+          <v-list-tile-content>
+            <v-list-tile-title>Logout</v-list-tile-title>
+          </v-list-tile-content>
+        </v-list-tile>
       </v-list>
     </v-navigation-drawer>
     <main>
@@ -68,18 +89,44 @@ export default {
   data () {
     return {
       sideNav: false,
-      menuItem: [
+      sideNavmob: false
+    }
+  },
+  computed: {
+    menuItem () {
+      let menuItem = [
         { icon: 'inbox', title: 'Inbox', link: '/work' },
-        { icon: 'web', title: 'Website', link: '/website' },
-        { icon: 'android', title: 'Android', link: '/android' },
-        { icon: 'face', title: 'Sign up', link: '/signup' },
-        { icon: 'lock_open', title: 'Sign in', link: '/login' }
-      ],
-      sideNavmob: false,
-      menuItem1: [
         { icon: 'face', title: 'Sign up', link: '/signup' },
         { icon: 'lock_open', title: 'Sign in', link: '/login' }
       ]
+      if (this.userIsAuthenticated) {
+        menuItem = [
+          { icon: 'inbox', title: 'Inbox', link: '/work' },
+          { icon: 'web', title: 'Website', link: '/website' },
+          { icon: 'android', title: 'Android', link: '/android' }
+        ]
+      }
+      return menuItem
+    },
+    menuItem1 () {
+      let menuItem1 = [
+        { icon: 'face', title: 'Sign up', link: '/signup' },
+        { icon: 'lock_open', title: 'Sign in', link: '/login' }
+      ]
+      if (this.userIsAuthenticated) {
+        menuItem1 = [
+          { icon: 'inbox', title: 'Inbox', link: '/work' }
+        ]
+      }
+      return menuItem1
+    },
+    userIsAuthenticated () {
+      return this.$store.getters.user !== null && this.$store.getters.user !== undefined
+    }
+  },
+  methods: {
+    onLogout () {
+      this.$store.dispatch('logout')
     }
   }
 }

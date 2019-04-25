@@ -8,7 +8,7 @@
         <v-layout row p-3>
             <v-flex xs12>
                 <v-form @submit.prevent="onCreateWork">
-                    <v-layout row>
+                    <v-layout row pa-2>
                         <v-flex xs12 sm6 offset-sm3>
                             <v-text-field
                                 name="title"
@@ -18,7 +18,7 @@
                                 required></v-text-field>
                         </v-flex>
                     </v-layout>
-                    <v-layout row>
+                    <!-- <v-layout row pa-2>
                         <v-flex xs12 sm6 offset-sm3>
                             <v-text-field
                                 name="location"
@@ -27,20 +27,25 @@
                                 v-model="location"
                                 required></v-text-field>
                         </v-flex>
-                    </v-layout>
-                    <v-layout row>
+                    </v-layout> -->
+                    <v-layout row pa-2>
                         <v-flex xs12 sm6 offset-sm3>
                             <v-text-field
-                                name="description"
-                                label="Description"
-                                id="description"
-                                v-model="description"
+                                name="imageUrl"
+                                label="ImageUrl"
+                                id="imageUrl"
+                                v-model="imageUrl"
                                 required></v-text-field>
+                        </v-flex>
+                    </v-layout>
+                    <v-layout row pa-3>
+                        <v-flex xs12 sm6 offset-sm3>
+                            <v-img :src="imageUrl" height="200"></v-img>
                         </v-flex>
                     </v-layout>
                     <v-layout align-center justify-center row>
                         <v-flex xs12 sm6 offset-sm-12>
-                            <v-btn class="primary" :disabled="!formIsValid">Create</v-btn>
+                            <v-btn class="primary" :disabled="!formIsValid" type="submit">Create</v-btn>
                         </v-flex>
                     </v-layout>
                 </v-form>
@@ -55,15 +60,17 @@ export default {
   data () {
     return {
       title: '',
-      location: '',
-      description: ''
+      // location: '',
+      // description: '',
+      imageUrl: ''
     }
   },
   computed: {
     formIsValid () {
       return this.title !== '' &&
-      this.location !== '' &&
-      this.description !== ''
+      // this.location !== '' &&
+      // this.description !== '' &&
+      this.imageUrl !== ''
     }
   },
   methods: {
@@ -73,12 +80,14 @@ export default {
       }
       const workdata = {
         title: this.title,
-        location: this.location,
-        description: this.description,
+        // location: this.location,
+        // description: this.description,
+        imageUrl: this.imageUrl,
         date: new Date()
       }
       this.$store.dispatch('createWork', workdata)
-      this.$router.push('/')
+      // console.log({ workdata })
+      this.$router.push('/work')
     }
   }
 }
